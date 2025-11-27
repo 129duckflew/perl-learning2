@@ -7,7 +7,7 @@ my $DBH;
 # 请修改为你的数据库配置
 my $DB_DSN  = "dbi:Pg:dbname=postgres;host=localhost;port=5432";
 my $DB_USER = "postgres"; 
-my $DB_PASS = "your_password";
+my $DB_PASS = "12345678";
 
 sub get_handle {
     return $DBH if $DBH && $DBH->ping;
@@ -17,5 +17,6 @@ sub get_handle {
         PrintError => 0,
         pg_enable_utf8 => 1,
     }) or die $DBI::errstr;
-    return $DBH;
+    return $DBH;    
 }
+1;

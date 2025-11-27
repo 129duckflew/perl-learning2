@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>Error</title></head>
+<body style="font-family: sans-serif; padding: 50px; text-align: center;">
+    <h1 style="color: red;">System Error</h1>
+    <p>Something went wrong processing your request:</p>
+    <div style="background: #eee; padding: 20px; display: inline-block; border-radius: 5px;">
+        [% error %]
+    </div>
+    <br><br>
+    <a href="app.cgi">Return to Dashboard</a>
+</body>
+</html>

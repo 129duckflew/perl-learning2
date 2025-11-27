@@ -1,0 +1,40 @@
+services:
+  postgres_db:
+    # 使用官方的 PostgreSQL 镜像，并指定 tag 为 17
+    image: postgres:17-alpine 
+    
+    # 容器名称 (可选，但推荐指定，方便管理)
+    container_name: postgres17_container
+    
+    # 重启策略：如果容器退出，总是尝试重启它
+    restart: always
+    
+    # 端口映射：将主机的 5432 端口映射到容器的 5432 端口
+    # 您可以将左侧的 5432 更改为其他端口，例如 5433:5432
+    ports:
+      - "5432:5432"
+      
+    # 环境变量：用于配置 PostgreSQL
+    environment:
+      # ⚠️ 必需：设置超级用户的密码
+      # 请务必替换为您自己的强密码！
+      POSTGRES_PASSWORD: 12345678
+      
+      # 可选：设置初始数据库的名称 (如果未设置，则默认数据库为 'postgres')
+      POSTGRES_DB: postgres
+      
+      # 可选：设置初始用户的名称 (如果未设置，则默认用户为 'postgres')
+      POSTGRES_USER: postgres
+      
+    # 数据卷挂载：用于持久化数据
+    # 这确保了容器被删除后，您的数据仍然保留
+    volumes:
+      # 使用 Docker 命名卷来存储数据
+      - postgres_data_17:/var/lib/postgresql/data
+      
+      # 可选：如果你有自定义的初始化 SQL 脚本，可以挂载到这个目录
+      # - ./init-scripts:/docker-entrypoint-initdb.d
+
+# 定义数据卷
+volumes:
+  postgres_data_17:
