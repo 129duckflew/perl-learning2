@@ -81,6 +81,42 @@
         </div>
     </div>
 
+    <h2>Storages List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Capacity</th>
+                <th>Attached VM</th>
+                <th>Created At</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            [% FOREACH s IN storages_all %]
+            <tr>
+                <td>[% s.id %]</td>
+                <td>[% s.name %]</td>
+                <td>[% s.capacity %] GB</td>
+                <td>[% IF s.v_id %]Attached (VM ID: [% s.v_id %])[% ELSE %]<span style="color:#999">Not Attached</span>[% END %]</td>
+                <td>[% s.created_at %]</td>
+                <td>
+                    [% IF s.v_id %]
+                        <span style="color:#999">不可删除</span>
+                    [% ELSE %]
+                        <form action="app.pl" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this Storage?');">
+                            <input type="hidden" name="action" value="delete_storage">
+                            <input type="hidden" name="id" value="[% s.id %]">
+                            <button type="submit" style="background:none; border:none; color:red; cursor:pointer; padding:0; width:auto;">Delete</button>
+                        </form>
+                    [% END %]
+                </td>
+            </tr>
+            [% END %]
+        </tbody>
+    </table>
+
     <h2>Virtual Machines List</h2>
     <table>
         <thead>

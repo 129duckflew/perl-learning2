@@ -55,6 +55,34 @@ sub save {
     return $self->{id};
 }
 
+# 列出所有存储（包含已绑定和未绑定）——供管理界面显示使用
+sub list_all {
+    my ($class) = @_;
+    my $dbh = Local::DB::get_handle();
+    my $rows = $dbh->selectall_arrayref("SELECT * FROM storages ORDER BY id DESC", { Slice => {} });
+    my @out;
+    foreach my $r (@$rows) {
+        push @out, $class->new(%$r);
+    }
+    return \@out;
+}
+
+# 删除存储（仅允许未被 VM 绑定的存储删除）
+sub delete {
+    my ($self) = @_;
+    my $dbh = Local::DB::get_handle();
+    die "Missing id" unless $self->{id};
+
+    # 检查是否被绑定
+    my $row = $dbh->selectrow_hashref("SELECT v_id FROM storages WHERE id = ?", undef, $self->{id});
+    if ($row && defined $row->{v_id} && $row->{v_id} ne '') {
+        die "Storage is attached to VM (v_id=$row->{v_id}), cannot delete";
+    }
+
+    $dbh->do("DELETE FROM storages WHERE id = ?", undef, $self->{id});
+    return 1;
+}
+
 # Getter needed for Template Toolkit
 sub id { shift->{id} }
 sub name { shift->{name} }

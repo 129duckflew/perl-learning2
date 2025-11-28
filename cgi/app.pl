@@ -29,7 +29,8 @@ eval {
     if ($action eq 'list') {
         # 显示列表 (Dashboard)
         $vars->{vms} = Local::VirtualMachine->find_all();
-        $vars->{storages} = Local::Storage->find_all(); # 用于新建 VM 的下拉菜单
+        $vars->{storages} = Local::Storage->find_all(); # 用于新建 VM 的下拉菜单 (仅未绑定的存储)
+        $vars->{storages_all} = Local::Storage->list_all(); # 用于管理界面显示所有存储
     }
     elsif ($action eq 'create_storage') {
         my $name = $q->param('name');
@@ -44,6 +45,7 @@ eval {
         # Reload list
         $vars->{vms} = Local::VirtualMachine->find_all();
         $vars->{storages} = Local::Storage->find_all();
+        $vars->{storages_all} = Local::Storage->list_all();
     }
     elsif ($action eq 'create_vm') {
         my $name    = $q->param('name');
@@ -68,6 +70,7 @@ eval {
         # Reload list
         $vars->{vms} = Local::VirtualMachine->find_all();
         $vars->{storages} = Local::Storage->find_all();
+        $vars->{storages_all} = Local::Storage->list_all();
     }
     elsif ($action eq 'delete_vm') {
         my $id = $q->param('id');
@@ -78,6 +81,18 @@ eval {
         }
         $vars->{vms} = Local::VirtualMachine->find_all();
         $vars->{storages} = Local::Storage->find_all();
+        $vars->{storages_all} = Local::Storage->list_all();
+    }
+    elsif ($action eq 'delete_storage') {
+        my $id = $q->param('id');
+        if ($id) {
+            my $sto = Local::Storage->new(id => $id);
+            $sto->delete();
+            $vars->{message} = "Storage deleted.";
+        }
+        $vars->{vms} = Local::VirtualMachine->find_all();
+        $vars->{storages} = Local::Storage->find_all();
+        $vars->{storages_all} = Local::Storage->list_all();
     }
     else {
         die "Unknown action";
