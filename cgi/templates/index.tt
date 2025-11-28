@@ -81,6 +81,36 @@
         </div>
     </div>
 
+    [% IF edit_vm %]
+    <div class="card" style="margin-bottom:20px;">
+        <h2>Edit VM (ID: [% edit_vm.id %])</h2>
+        <form action="app.pl" method="POST">
+            <input type="hidden" name="action" value="update_vm">
+            <input type="hidden" name="id" value="[% edit_vm.id %]">
+
+            <label>Server Name:</label>
+            <input type="text" name="name" required value="[% edit_vm.name %]">
+
+            <label>Operating System:</label>
+            <select name="os">
+                <option value="Ubuntu" [% IF edit_vm.os == 'Ubuntu' %]selected[% END %]>Ubuntu</option>
+                <option value="CentOS" [% IF edit_vm.os == 'CentOS' %]selected[% END %]>CentOS</option>
+                <option value="Debian" [% IF edit_vm.os == 'Debian' %]selected[% END %]>Debian</option>
+                <option value="Windows Server" [% IF edit_vm.os == 'Windows Server' %]selected[% END %]>Windows Server</option>
+            </select>
+
+            <label>Attach Storage (Optional - Hold Ctrl/Cmd for Multiple):</label>
+            <select name="storage_ids" multiple="multiple" size="6">
+                [% FOREACH s IN storages_all %]
+                    <option value="[% s.id %]" [% IF selected_storage_ids.$s.id %]selected[% END %]>[% s.name %] ([% s.capacity %]GB) [% IF s.v_id %] - Attached to VM #[% s.v_id %][% END %]</option>
+                [% END %]
+            </select>
+            <button type="submit">Update VM</button>
+            <a href="app.pl" style="margin-left:10px; color:#555; text-decoration:none;">Cancel</a>
+        </form>
+    </div>
+    [% END %]
+
     <h2>Storages List</h2>
     <table>
         <thead>
@@ -146,11 +176,18 @@
                 <td><small>[% vm.checksum %]</small></td>
                 <td>[% vm.created_at %]</td>
                 <td>
-                    <form action="app.pl" method="POST" style="display:inline;" onsubmit="return confirmDelete()">
-                        <input type="hidden" name="action" value="delete_vm">
-                        <input type="hidden" name="id" value="[% vm.id %]">
-                        <button type="submit" style="background:none; border:none; color:red; cursor:pointer; padding:0; width:auto;">Delete</button>
-                    </form>
+                        <!-- Edit VM (使用 GET 触发 edit_vm) -->
+                        <form action="app.pl" method="GET" style="display:inline; margin-right:8px;">
+                            <input type="hidden" name="action" value="edit_vm">
+                            <input type="hidden" name="id" value="[% vm.id %]">
+                            <button type="submit" style="background:none; border:none; color:#2980b9; cursor:pointer; padding:0; width:auto;">Edit</button>
+                        </form>
+                        <!-- Delete VM -->
+                        <form action="app.pl" method="POST" style="display:inline;" onsubmit="return confirmDelete()">
+                            <input type="hidden" name="action" value="delete_vm">
+                            <input type="hidden" name="id" value="[% vm.id %]">
+                            <button type="submit" style="background:none; border:none; color:red; cursor:pointer; padding:0; width:auto;">Delete</button>
+                        </form>
                 </td>
             </tr>
             [% END %]

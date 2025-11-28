@@ -77,10 +77,24 @@ sub find_all {
 
 sub find {
     my ($class, $id) = @_;
-    # 为了简化，此处 find 不包含关联存储查询，只返回 VM 基本信息
     my $dbh = Local::DB::get_handle();
     my $row = $dbh->selectrow_hashref("SELECT * FROM virtual_machines WHERE id = ?", undef, $id);
     return undef unless $row;
+
+    # 查询该 VM 关联的 storages
+    my $sth = $dbh->prepare("SELECT id, name FROM storages WHERE v_id = ? ORDER BY id ASC");
+    $sth->execute($id);
+    my @sids;
+    my @snames;
+    while (my $r = $sth->fetchrow_hashref) {
+        push @sids, $r->{id};
+        push @snames, $r->{name};
+    }
+
+    $row->{storage_ids} = \@sids;
+    $row->{storage_names} = \@snames;
+    $row->{storage_ids_csv} = join(', ', @sids);
+
     return $class->new(%$row);
 }
 

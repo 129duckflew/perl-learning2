@@ -32,6 +32,20 @@ eval {
         $vars->{storages} = Local::Storage->find_all(); # 用于新建 VM 的下拉菜单 (仅未绑定的存储)
         $vars->{storages_all} = Local::Storage->list_all(); # 用于管理界面显示所有存储
     }
+    elsif ($action eq 'edit_vm') {
+        my $id = $q->param('id');
+        die "Missing id" unless $id;
+        my $vm = Local::VirtualMachine->find($id);
+        die "VM not found" unless $vm;
+        $vars->{edit_vm} = $vm;
+        # 为了模板方便，准备一个 hash 用于判断哪些 storage 被选中
+        my %sel = map { $_ => 1 } @{ $vm->{storage_ids} || [] };
+        $vars->{selected_storage_ids} = \%sel;
+        # 需要 storages 列表供多选框显示（包含所有存储以便选择已绑定的或未绑定的）
+        $vars->{storages_all} = Local::Storage->list_all();
+        $vars->{storages} = Local::Storage->find_all();
+        $vars->{vms} = Local::VirtualMachine->find_all();
+    }
     elsif ($action eq 'create_storage') {
         my $name = $q->param('name');
         my $cap  = $q->param('capacity');
@@ -79,6 +93,30 @@ eval {
             $vm->delete();
             $vars->{message} = "VM deleted. Storage disassociated (if any).";
         }
+        $vars->{vms} = Local::VirtualMachine->find_all();
+        $vars->{storages} = Local::Storage->find_all();
+        $vars->{storages_all} = Local::Storage->list_all();
+    }
+    elsif ($action eq 'update_vm') {
+        my $id      = $q->param('id');
+        my $name    = $q->param('name');
+        my $os      = $q->param('os');
+        my @sto_ids = $q->param('storage_ids');
+        @sto_ids = grep { defined $_ && $_ ne '' } @sto_ids;
+        die "VM id is required" unless $id;
+        die "VM Name is required" unless $name;
+        die "Operating System is required" unless $os;
+
+        my $vm = Local::VirtualMachine->new(
+            id => $id,
+            name => $name,
+            os => $os,
+            storage_ids => \@sto_ids,
+        );
+        $vm->save();
+        $vars->{message} = "VM updated.";
+
+        # Reload lists
         $vars->{vms} = Local::VirtualMachine->find_all();
         $vars->{storages} = Local::Storage->find_all();
         $vars->{storages_all} = Local::Storage->list_all();
