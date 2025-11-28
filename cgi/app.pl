@@ -1,9 +1,11 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
+
+use FindBin qw($RealBin);
+use lib "$RealBin/../local/lib/perl5"; # 添加本地目录到模块搜索路径
+use lib "$RealBin/lib"; # 添加应用程序库目录到模块搜索路径
 use CGI;
-use FindBin;
-use lib "$FindBin::Bin/lib"; # 引用本地 lib
 use Template;
 use Local::VirtualMachine;
 use Local::Storage;

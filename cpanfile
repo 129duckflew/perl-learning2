@@ -1,16 +1,10 @@
-# cpanfile - 项目依赖描述文件
-
-# 指定所需的 Perl 版本 (根据您的项目需求调整)
 requires 'perl', '5.010'; 
-
-# --- 运行时依赖 (Runtime Dependencies) ---
-# 这是您的业务代码（lib/）在运行时需要的模块
 requires 'DBI', '>= 1.643'; # 数据库接口
-# 其他您的业务模块可能需要的，例如：
 requires 'Template', '>= 2.29'; # 如果使用了 Template Toolkit
-
+requires 'CGI', '>= 3.63';      # 如果是 CGI 应用
+# DBD PG
+requires 'DBD::Pg', '>= 3.18.0'; # PostgreSQL 数据库驱动
 # --- 测试依赖 (Testing Dependencies) ---
-# 这些是只在运行测试（t/）时需要的模块
 on 'test' => sub {
     # Test::Class 生态系统
     requires 'Test::Class', '>= 0.51';
