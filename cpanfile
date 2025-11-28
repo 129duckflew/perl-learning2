@@ -14,7 +14,7 @@ on 'test' => sub {
     requires 'Test::More', '>= 1.302183'; # 确保使用较新版本
     requires 'Test::MockModule', '>= 0.16';
     requires 'Test::Fatal', '>= 0.010';
-    
+    requires 'Test::MockObject', '>= 1.201';
     # 其他常用的测试工具（可选，但推荐）
     requires 'Test::Exception', '>= 0.43'; 
 };
